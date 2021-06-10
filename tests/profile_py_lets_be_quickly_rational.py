@@ -18,6 +18,7 @@ _N = [random.randint(0, 3) for _ in range(NumTestCases)]
 _z = [random.uniform(0, 1) for _ in range(NumTestCases)]
 _x = [random.uniform(0, 1) for _ in range(NumTestCases)]
 
+
 def run_black():
     q = 1  # CALL = 1 PUT = -1
     for i in range(NumTestCases):
@@ -56,6 +57,7 @@ def run_implied_volatility_from_a_transformed_rational_guess():
         except:
             pass
 
+
 def run_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations():
     price = 100.0
     q = 1  # CALL = 1 PUT = -1
@@ -86,6 +88,7 @@ def run_implied_volatility_from_a_transformed_rational_guess_with_limited_iterat
             )
         except:
             pass
+
 
 def run_normalised_black():
     q = 1  # CALL = 1 PUT = -1
@@ -124,6 +127,7 @@ def run_normalised_black_call():
         s = sigma * sqrt(T)
 
         py_lets_be_quickly_rational.normalised_black_call(x, s)
+
 
 def run_normalised_vega():
     for i in range(NumTestCases):
@@ -205,27 +209,29 @@ def benchmark_custom_cdf():
         z = _z[i]
         py_lets_be_quickly_rational.norm_cdf(z)
 
+
 def benchmark_custom_erfcx():
     for val in erfxTestValues:
         py_lets_be_quickly_rational.erf_cody.erfcx_cody(val)
 
 
 funcs = [
-    # "run_black()",
-    # "run_implied_volatility_from_a_transformed_rational_guess()",
-    # "run_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations()",
-    # "run_normalised_black()",
-    # "run_normalised_black_call()",
-    # "run_normalised_vega()",
-    # "run_normalised_implied_volatility_from_a_transformed_rational_guess()",
-    # "run_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations()",
+    "run_black()",
+    "run_implied_volatility_from_a_transformed_rational_guess()",
+    "run_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations()",
+    "run_normalised_black()",
+    "run_normalised_black_call()",
+    "run_normalised_vega()",
+    "run_normalised_implied_volatility_from_a_transformed_rational_guess()",
+    "run_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations()",
     "benchmark_custom_cdf()",
-    "benchmark_custom_erfcx()"
+    "benchmark_custom_erfcx()",
 ]
 
 # Optional scipy benchmarks
 try:
     import scipy
+
     @py_lets_be_quickly_rational.numba_helper.maybe_jit(nogil=False)
     def special_cdf(x):
         return scipy.special.ndtr(x)
@@ -240,6 +246,7 @@ try:
         return scipy.special.erfcx(x)
 
     erfxTestValues = np.linspace(-3, 3)
+
     def benchmark_scipy_erfcx():
         for val in erfxTestValues:
             special_erfcx(val)
@@ -261,4 +268,8 @@ if __name__ == "__main__":
         except Exception as e:
             print("Exception in testcase {}, {} ".format(func, e))
         # Run the bench
-        print("py_lets_be_quickly_rational:", func, timeit(func, globals=globals(), number=100))
+        print(
+            "py_lets_be_quickly_rational:",
+            func,
+            timeit(func, globals=globals(), number=100),
+        )
