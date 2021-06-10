@@ -289,8 +289,6 @@ def _normalised_black_call_using_erfcx(h, t):
     b = 0.5 * exp(-0.5*(h*h+t*t)) * ( erfcx_cody(-ONE_OVER_SQRT_TWO*(h+t)) - erfcx_cody(-ONE_OVER_SQRT_TWO*(h-t)) )
     return fabs(max(b,0.0))
 
-import numba
-
 def _unchecked_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta, x, q,  N):
     """
     See http://en.wikipedia.org/wiki/Householder%27s_method for a detailed explanation of the third order Householder iteration.

@@ -209,12 +209,6 @@ def benchmark_custom_cdf():
         z = _z[i]
         py_lets_be_quickly_rational.norm_cdf(z)
 
-
-def benchmark_custom_erfcx():
-    for val in erfxTestValues:
-        py_lets_be_quickly_rational.erf_cody.erfcx_cody(val)
-
-
 funcs = [
     "run_black()",
     "run_implied_volatility_from_a_transformed_rational_guess()",
@@ -225,12 +219,14 @@ funcs = [
     "run_normalised_implied_volatility_from_a_transformed_rational_guess()",
     "run_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations()",
     "benchmark_custom_cdf()",
-    "benchmark_custom_erfcx()",
 ]
 
 # Optional scipy benchmarks
 try:
     import scipy
+
+    #Make sure they have bindings
+    import numba_scipy
 
     @py_lets_be_quickly_rational.numba_helper.maybe_jit(nogil=False)
     def special_cdf(x):
@@ -251,9 +247,14 @@ try:
         for val in erfxTestValues:
             special_erfcx(val)
 
+    def benchmark_custom_erfcx():
+        for val in erfxTestValues:
+            py_lets_be_quickly_rational.erf_cody.erfcx_cody(val)
+
     funcs += [
         "benchmark_scipy_cdf()",
         "benchmark_scipy_erfcx()",
+        "benchmark_custom_erfcx()",
     ]
 except:
     pass

@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='py_lets_be_quickly_rational',
-    version='1.0.0',
+    version='1.0.1',
     packages=['py_lets_be_quickly_rational'],
     url="https://github.com/tmcnitt/py_lets_be_quickly_rational",
     license='MIT',
