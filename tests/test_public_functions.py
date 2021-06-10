@@ -1,7 +1,7 @@
 from __future__ import division
 import unittest
 
-import py_lets_be_rational
+import py_lets_be_quickly_rational
 
 from math import log
 from math import sqrt
@@ -21,7 +21,7 @@ class TestPublicFunctions(unittest.TestCase):
         T = .5
         q = 1  # CALL = 1 PUT = -1
 
-        actual = py_lets_be_rational.black(F, K, sigma, T, q)
+        actual = py_lets_be_quickly_rational.black(F, K, sigma, T, q)
         expected = 5.637197779701664
         self._assertAlmostEqual(actual, expected)
 
@@ -33,7 +33,7 @@ class TestPublicFunctions(unittest.TestCase):
         q = 1  # CALL = 1 PUT = -1
 
         price = 5.637197779701664
-        actual = py_lets_be_rational.implied_volatility_from_a_transformed_rational_guess(price, F, K, T, q)
+        actual = py_lets_be_quickly_rational.implied_volatility_from_a_transformed_rational_guess(price, F, K, T, q)
         expected = 0.2
         self._assertAlmostEqual(actual, expected)
 
@@ -46,7 +46,7 @@ class TestPublicFunctions(unittest.TestCase):
         N = 1
 
         price = 6.54635543387
-        actual = py_lets_be_rational.implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(price, F, K, T, q, N)
+        actual = py_lets_be_quickly_rational.implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(price, F, K, T, q, N)
         expected = 0.232323232
         self._assertAlmostEqual(actual, expected)
 
@@ -60,12 +60,12 @@ class TestPublicFunctions(unittest.TestCase):
         s = sigma * sqrt(T)
 
         q = -1  # CALL = 1 PUT = -1
-        actual_put = py_lets_be_rational.normalised_black(x, s, q)
+        actual_put = py_lets_be_quickly_rational.normalised_black(x, s, q)
         expected_put = 0.061296663817558904
         self._assertAlmostEqual(actual_put, expected_put)
 
         q = 1  # CALL = 1 PUT = -1
-        actual_call = py_lets_be_rational.normalised_black(x, s, q)
+        actual_call = py_lets_be_quickly_rational.normalised_black(x, s, q)
         expected_call = 0.11259558142181655
         self._assertAlmostEqual(actual_call, expected_call)
 
@@ -78,26 +78,26 @@ class TestPublicFunctions(unittest.TestCase):
         x = log(F/K)
         s = sigma * sqrt(T)
 
-        actual = py_lets_be_rational.normalised_black_call(x, s)
+        actual = py_lets_be_quickly_rational.normalised_black_call(x, s)
         expected = 0.11259558142181655
         self._assertAlmostEqual(actual, expected)
 
     def test_normalised_vega(self):
         x = 0.0
         s = 0.0
-        actual = py_lets_be_rational.normalised_vega(x, s)
+        actual = py_lets_be_quickly_rational.normalised_vega(x, s)
         expected = 0.3989422804014327
         self._assertAlmostEqual(actual, expected)
 
         x = 0.0
         s = 2.937528694999807
-        actual = py_lets_be_rational.normalised_vega(x, s)
+        actual = py_lets_be_quickly_rational.normalised_vega(x, s)
         expected = 0.13566415614561067
         self._assertAlmostEqual(actual, expected)
 
         x = 0.0
         s = 0.2
-        actual = py_lets_be_rational.normalised_vega(x, s)
+        actual = py_lets_be_quickly_rational.normalised_vega(x, s)
         expected = 0.3969525474770118
         self._assertAlmostEqual(actual, expected)
 
@@ -105,16 +105,16 @@ class TestPublicFunctions(unittest.TestCase):
         x = 0.0
         s = 0.2
         q = 1  # CALL = 1 PUT = -1
-        beta_call = py_lets_be_rational.normalised_black(x, s, q)
-        actual = py_lets_be_rational.normalised_implied_volatility_from_a_transformed_rational_guess(beta_call, x, q)
+        beta_call = py_lets_be_quickly_rational.normalised_black(x, s, q)
+        actual = py_lets_be_quickly_rational.normalised_implied_volatility_from_a_transformed_rational_guess(beta_call, x, q)
         expected = 0.2
         self._assertAlmostEqual(actual, expected)
 
         x = 0.1
         s = 0.23232323888
         q = -1  # CALL = 1 PUT = -1
-        beta_put = py_lets_be_rational.normalised_black(x, s, q)
-        actual = py_lets_be_rational.normalised_implied_volatility_from_a_transformed_rational_guess(beta_put, x, q)
+        beta_put = py_lets_be_quickly_rational.normalised_black(x, s, q)
+        actual = py_lets_be_quickly_rational.normalised_implied_volatility_from_a_transformed_rational_guess(beta_put, x, q)
         expected = 0.23232323888
         self._assertAlmostEqual(actual, expected)
 
@@ -123,8 +123,8 @@ class TestPublicFunctions(unittest.TestCase):
         s = 0.2
         q = 1  # CALL = 1 PUT = -1
         N = 1
-        beta_call = py_lets_be_rational.normalised_black(x, s, q)
-        actual = py_lets_be_rational.normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta_call, x, q, N)
+        beta_call = py_lets_be_quickly_rational.normalised_black(x, s, q)
+        actual = py_lets_be_quickly_rational.normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta_call, x, q, N)
         expected = 0.2
         self._assertAlmostEqual(actual, expected)
 
@@ -132,19 +132,19 @@ class TestPublicFunctions(unittest.TestCase):
         s = 0.23232323888
         q = -1  # CALL = 1 PUT = -1
         N = 1
-        beta_put = py_lets_be_rational.normalised_black(x, s, q)
-        actual = py_lets_be_rational.normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta_put, x, q, N)
+        beta_put = py_lets_be_quickly_rational.normalised_black(x, s, q)
+        actual = py_lets_be_quickly_rational.normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta_put, x, q, N)
         expected = 0.23232323888
         self._assertAlmostEqual(actual, expected)
 
     def test_norm_cdf(self):
         z = 0.302569738839
-        actual = py_lets_be_rational.norm_cdf(z)
+        actual = py_lets_be_quickly_rational.norm_cdf(z)
         expected = 0.618891110513
         self._assertAlmostEqual(actual, expected)
 
         z = 0.161148382602
-        actual = py_lets_be_rational.norm_cdf(z)
+        actual = py_lets_be_quickly_rational.norm_cdf(z)
         expected = 0.564011732814
         self._assertAlmostEqual(actual, expected)
 

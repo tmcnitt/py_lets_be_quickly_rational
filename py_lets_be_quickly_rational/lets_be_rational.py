@@ -1,54 +1,26 @@
 # -*- coding: utf-8 -*-
 
-"""
-py_lets_be_rational.lets_be_rational
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Pure python implementation of Peter Jaeckel's LetsBeRational.
-
-:copyright: © 2017 Gammon Capital LLC
-:license: MIT, see LICENSE for more details.
-
-About LetsBeRational:
-~~~~~~~~~~~~~~~~~~~~~
-
-The source code of LetsBeRational resides at www.jaeckel.org/LetsBeRational.7z .
-
-======================================================================================
-Copyright © 2013-2014 Peter Jäckel.
-
-Permission to use, copy, modify, and distribute this software is freely granted,
-provided that this notice is preserved.
-
-WARRANTY DISCLAIMER
-The Software is provided "as is" without warranty of any kind, either express or implied,
-including without limitation any implied warranties of condition, uninterrupted use,
-merchantability, fitness for a particular purpose, or non-infringement.
-======================================================================================
-"""
-
 from __future__ import division, print_function
 
 from math import fabs, sqrt, log, exp
 
-from py_lets_be_rational.numba_helper import maybe_jit
-from py_lets_be_rational.exceptions import BelowIntrinsicException, AboveMaximumException
+from py_lets_be_quickly_rational.numba_helper import maybe_jit_module
+from py_lets_be_quickly_rational.exceptions import BelowIntrinsicException, AboveMaximumException
 
-from py_lets_be_rational.constants import *
-from py_lets_be_rational.rationalcubic import *
+from py_lets_be_quickly_rational.constants import *
+from py_lets_be_quickly_rational.rationalcubic import *
 
-from py_lets_be_rational.erf_cody import erfcx_cody
+from py_lets_be_quickly_rational.erf_cody import erfcx_cody
 
-from py_lets_be_rational.normaldistribution import inverse_norm_cdf
-from py_lets_be_rational.normaldistribution import norm_cdf
-from py_lets_be_rational.normaldistribution import norm_pdf
+from py_lets_be_quickly_rational.normaldistribution import inverse_norm_cdf
+from py_lets_be_quickly_rational.normaldistribution import norm_cdf
+from py_lets_be_quickly_rational.normaldistribution import norm_pdf
 
 implied_volatility_maximum_iterations = 2
 asymptotic_expansion_accuracy_threshold = -10
 small_t_expansion_of_normalized_black_threshold = 2 * SIXTEENTH_ROOT_DBL_EPSILON
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _householder_factor(newton, halley, hh3):
     """
 
@@ -61,7 +33,6 @@ def _householder_factor(newton, halley, hh3):
     return (1 + 0.5 * halley * newton) / (1 + newton * (halley + hh3 * newton / 6))
 
 
-@maybe_jit(cache=True)
 def _compute_f_lower_map_and_first_two_derivatives(x, s):
     """
 
@@ -94,7 +65,6 @@ def _compute_f_lower_map_and_first_two_derivatives(x, s):
     return f, fp, fpp
 
 
-@maybe_jit(cache=True)
 def _compute_f_upper_map_and_first_two_derivatives(x, s):
     """
 
@@ -118,7 +88,6 @@ def _compute_f_upper_map_and_first_two_derivatives(x, s):
     return f, fp, fpp
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _square(x):
     """
 
@@ -130,7 +99,6 @@ def _square(x):
     return x*x
 
 
-@maybe_jit(cache=True)
 def _inverse_f_lower_map(x, f):
     """
 
@@ -146,7 +114,6 @@ def _inverse_f_lower_map(x, f):
         x / (SQRT_THREE * inverse_norm_cdf(pow(f / (TWO_PI_OVER_SQRT_TWENTY_SEVEN * fabs(x)), 1. / 3.))))
 
 
-@maybe_jit(cache=True)
 def _inverse_f_upper_map(f):
     """
 
@@ -159,7 +126,6 @@ def _inverse_f_upper_map(f):
     return -2. * inverse_norm_cdf(f)
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _is_below_horizon(x):
     """
     This weeds out denormalized (a.k.a. 'subnormal') numbers.
@@ -173,7 +139,6 @@ def _is_below_horizon(x):
     return fabs(x) < DENORMALIZATION_CUTOFF
 
 
-@maybe_jit(cache=True)
 def _normalized_black_call_using_norm_cdf(x, s):
     """
             b(x,s)  =  Φ(x/s+s/2)·exp(x/2)  -   Φ(x/s-s/2)·exp(-x/2)
@@ -196,7 +161,6 @@ def _normalized_black_call_using_norm_cdf(x, s):
     return fabs(max(b, 0.0))
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _asymptotic_expansion_of_normalized_black_call(h, t):
     """
     Asymptotic expansion of
@@ -238,7 +202,6 @@ def _asymptotic_expansion_of_normalized_black_call(h, t):
     return fabs(max(b , 0.))
 
 
-@maybe_jit(cache=True)
 def _small_t_expansion_of_normalized_black_call(h, t):
     """
     Calculation of
@@ -275,7 +238,6 @@ def _small_t_expansion_of_normalized_black_call(h, t):
     return fabs(max(b,0.0))
 
 
-@maybe_jit(cache=True)
 def _normalised_black_call_using_erfcx(h, t):
     """
     Given h = x/s and t = s/2, the normalised Black function can be written as
@@ -327,8 +289,8 @@ def _normalised_black_call_using_erfcx(h, t):
     b = 0.5 * exp(-0.5*(h*h+t*t)) * ( erfcx_cody(-ONE_OVER_SQRT_TWO*(h+t)) - erfcx_cody(-ONE_OVER_SQRT_TWO*(h-t)) )
     return fabs(max(b,0.0))
 
+import numba
 
-# @maybe_jit(cache=True)
 def _unchecked_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta, x, q,  N):
     """
     See http://en.wikipedia.org/wiki/Householder%27s_method for a detailed explanation of the third order Householder iteration.
@@ -557,16 +519,16 @@ def _unchecked_normalised_implied_volatility_from_a_transformed_rational_guess_w
 def normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta, x, q, N):
     """
 
-    :param beta: 
+    :param beta:
     :type beta: float
-    :param x: 
+    :param x:
     :type x: float
     :param q: q=±1
     :type q: float
     :param N:
     :type N: int
-    
-    :return: 
+
+    :return:
     """
     # Map in-the-money to out-of-the-money
     if q * x > 0:
@@ -578,24 +540,23 @@ def normalised_implied_volatility_from_a_transformed_rational_guess_with_limited
     return _unchecked_normalised_implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(beta, x, q, N)
 
 
-# @maybe_jit(cache=True)
 def implied_volatility_from_a_transformed_rational_guess_with_limited_iterations(price, F, K, T, q, N):
     """
 
-    :param price: 
+    :param price:
     :type price: float
-    :param F: 
+    :param F:
     :type F: float
-    :param K: 
+    :param K:
     :type K: float
-    :param T: 
+    :param T:
     :type T: float
     :param q: q=±1
     :type q:float
-    :param N: 
+    :param N:
     :type N:int
 
-    :return: 
+    :return:
     :rtype: float
     """
     intrinsic = fabs(max(K - F if q < 0 else F - K, 0.0))
@@ -631,7 +592,6 @@ def normalised_implied_volatility_from_a_transformed_rational_guess(beta, x, q):
 
 
 # noinspection PyPep8Naming
-# @maybe_jit(cache=True)
 def implied_volatility_from_a_transformed_rational_guess(price, F, K, T, q):
     """
 
@@ -653,7 +613,6 @@ def implied_volatility_from_a_transformed_rational_guess(price, F, K, T, q):
         price, F, K, T, q, implied_volatility_maximum_iterations)
 
 
-@maybe_jit(cache=True)
 def normalised_vega(x, s):
     """
 
@@ -672,7 +631,6 @@ def normalised_vega(x, s):
         return 0 if s <= 0 or s <= ax * SQRT_DBL_MIN else ONE_OVER_SQRT_TWO_PI * exp(-0.5 * (_square(x / s) + _square(0.5 * s)))
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _normalised_intrinsic(x, q):
     """
 
@@ -694,7 +652,6 @@ def _normalised_intrinsic(x, q):
     return fabs(max((-1 if q < 0 else 1)*(b_max - one_over_b_max), 0.))
 
 
-@maybe_jit(cache=True)
 def _normalised_intrinsic_call(x):
     """
 
@@ -707,7 +664,6 @@ def _normalised_intrinsic_call(x):
     return _normalised_intrinsic(x, 1)
 
 
-@maybe_jit(cache=True)
 def normalised_black_call(x, s):
     """
 
@@ -744,7 +700,6 @@ def normalised_black_call(x, s):
     return _normalised_black_call_using_erfcx(x / s, 0.5 * s)
 
 
-@maybe_jit(cache=True)
 def normalised_black(x, s, q):
     """
 
@@ -762,7 +717,6 @@ def normalised_black(x, s, q):
 
 
 # noinspection PyPep8Naming
-@maybe_jit(cache=True)
 def black(F, K, sigma, T, q):
     """
 
@@ -786,3 +740,5 @@ def black(F, K, sigma, T, q):
     if q * (F - K) > 0:
         return intrinsic + black(F, K, sigma, T, -q)
     return max(intrinsic, (sqrt(F) * sqrt(K)) * normalised_black(log(F / K), sigma * sqrt(T), q))
+
+maybe_jit_module()(cache=True, nopython=True)

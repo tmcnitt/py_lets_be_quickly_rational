@@ -1,32 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-py_lets_be_rational.rationalcubic
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Pure python implementation of Peter Jaeckel's LetsBeRational.
-
-:copyright: © 2017 Gammon Capital LLC
-:license: MIT, see LICENSE for more details.
-
-About LetsBeRational:
-~~~~~~~~~~~~~~~~~~~~~
-
-The source code of LetsBeRational resides at www.jaeckel.org/LetsBeRational.7z .
-
-======================================================================================
-Copyright © 2013-2014 Peter Jäckel.
-
-Permission to use, copy, modify, and distribute this software is freely granted,
-provided that this notice is preserved.
-
-WARRANTY DISCLAIMER
-The Software is provided "as is" without warranty of any kind, either express or implied,
-including without limitation any implied warranties of condition, uninterrupted use,
-merchantability, fitness for a particular purpose, or non-infringement.
-======================================================================================
-"""
-
 # Based on
 #
 # “Shape preserving piecewise rational interpolation”, R. Delbourgo, J.A. Gregory - SIAM journal on scientific and
@@ -36,22 +9,20 @@ merchantability, fitness for a particular purpose, or non-infringement.
 from __future__ import division
 from math import fabs, sqrt
 
-from py_lets_be_rational.numba_helper import maybe_jit
-from py_lets_be_rational.constants import DBL_EPSILON
-from py_lets_be_rational.constants import DBL_MIN
-from py_lets_be_rational.constants import DBL_MAX
+from py_lets_be_quickly_rational.numba_helper import maybe_jit_module
+from py_lets_be_quickly_rational.constants import DBL_EPSILON
+from py_lets_be_quickly_rational.constants import DBL_MIN
+from py_lets_be_quickly_rational.constants import DBL_MAX
 
 
 minimum_rational_cubic_control_parameter_value = -(1 - sqrt(DBL_EPSILON))
 maximum_rational_cubic_control_parameter_value = 2 / (DBL_EPSILON * DBL_EPSILON)
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def _is_zero(x):
     return fabs(x) < DBL_MIN
 
 
-@maybe_jit(cache=True)
 def rational_cubic_control_parameter_to_fit_second_derivative_at_left_side(
         x_l, x_r, y_l, y_r, d_l, d_r, second_derivative_l):
     """
@@ -84,7 +55,6 @@ def rational_cubic_control_parameter_to_fit_second_derivative_at_left_side(
     return numerator / denominator
 
 
-@maybe_jit(cache=True)
 def minimum_rational_cubic_control_parameter(d_l, d_r, s, preferShapePreservationOverSmoothness):
     """
 
@@ -127,7 +97,6 @@ def minimum_rational_cubic_control_parameter(d_l, d_r, s, preferShapePreservatio
     return max(minimum_rational_cubic_control_parameter_value, max(r1, r2))
 
 
-@maybe_jit(cache=True)
 def rational_cubic_control_parameter_to_fit_second_derivative_at_right_side(
         x_l, x_r, y_l, y_r, d_l, d_r, second_derivative_r):
     """
@@ -160,7 +129,6 @@ def rational_cubic_control_parameter_to_fit_second_derivative_at_right_side(
     return numerator / denominator
 
 
-@maybe_jit(cache=True)
 def convex_rational_cubic_control_parameter_to_fit_second_derivative_at_right_side(
         x_l, x_r, y_l, y_r, d_l, d_r, second_derivative_r,
         preferShapePreservationOverSmoothness):
@@ -193,7 +161,6 @@ def convex_rational_cubic_control_parameter_to_fit_second_derivative_at_right_si
     return max(r, r_min)
 
 
-@maybe_jit(cache=True)
 def rational_cubic_interpolation(x, x_l, x_r, y_l, y_r, d_l, d_r, r):
 
     """
@@ -235,7 +202,6 @@ def rational_cubic_interpolation(x, x_l, x_r, y_l, y_r, d_l, d_r, r):
     return y_r * t + y_l * (1 - t)
 
 
-@maybe_jit(cache=True)
 def convex_rational_cubic_control_parameter_to_fit_second_derivative_at_left_side(
         x_l, x_r, y_l, y_r, d_l, d_r, second_derivative_l, preferShapePreservationOverSmoothness):
     """
@@ -265,3 +231,6 @@ def convex_rational_cubic_control_parameter_to_fit_second_derivative_at_left_sid
     r_min = minimum_rational_cubic_control_parameter(
         d_l, d_r, (y_r - y_l) / (x_r - x_l), preferShapePreservationOverSmoothness)
     return max(r, r_min)
+
+
+maybe_jit_module()(cache=True, nopython=True)

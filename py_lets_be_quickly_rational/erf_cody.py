@@ -1,39 +1,11 @@
 # -*- coding: utf-8 -*-
 
-"""
-py_lets_be_rational.erf_cody
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Pure python implementation of Peter Jaeckel's LetsBeRational.
-
-:copyright: © 2017 Gammon Capital LLC
-:license: MIT, see LICENSE for more details.
-
-About LetsBeRational:
-~~~~~~~~~~~~~~~~~~~~~
-
-The source code of LetsBeRational resides at www.jaeckel.org/LetsBeRational.7z .
-
-======================================================================================
-Copyright © 2013-2014 Peter Jäckel.
-
-Permission to use, copy, modify, and distribute this software is freely granted,
-provided that this notice is preserved.
-
-WARRANTY DISCLAIMER
-The Software is provided "as is" without warranty of any kind, either express or implied,
-including without limitation any implied warranties of condition, uninterrupted use,
-merchantability, fitness for a particular purpose, or non-infringement.
-======================================================================================
-"""
-
 from __future__ import division
 from math import floor, fabs, exp
 
-from py_lets_be_rational.numba_helper import maybe_jit
+from py_lets_be_quickly_rational.numba_helper import maybe_jit_module
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def d_int(x):
     return floor(x) if x > 0 else -floor(-x)
 
@@ -85,7 +57,6 @@ XMAX = 2.53e307
 
 
 # <       SUBROUTINE CALERF(ARG,RESULT,JINT) >
-@maybe_jit(cache=True)
 def calerf(x, jint):
     # ------------------------------------------------------------------
     # This packet evaluates  erf(x),  erfc(x),  and  exp(x*x)*erfc(x)
@@ -339,7 +310,6 @@ def calerf(x, jint):
     # calerf_
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def fix_up_for_negative_argument_erf_etc(jint, result, x):
     # ------------------------------------------------------------------
     #  Fix up for negative argument, erf, etc.
@@ -382,7 +352,6 @@ def fix_up_for_negative_argument_erf_etc(jint, result, x):
                 # <       END IF >
     return result
 
-@maybe_jit(cache=True)
 def erf_cody(x):
     #  --------------------------------------------------------------------
     #  This subprogram computes approximate values for erf(x).
@@ -404,7 +373,6 @@ def erf_cody(x):
     #  derf_
 
 
-@maybe_jit(cache=True)
 def erfc_cody(x):
     # --------------------------------------------------------------------
     # This subprogram computes approximate values for erfc(x).
@@ -425,7 +393,6 @@ def erfc_cody(x):
     # <       END >
 
 
-@maybe_jit(cache=True)
 def erfcx_cody(x):
     # ------------------------------------------------------------------
     # This subprogram computes approximate values for exp(x*x) * erfc(x).
@@ -444,3 +411,6 @@ def erfcx_cody(x):
     # <       RETURN >
     # ---------- Last card of DERFCX ----------
     # <       END >
+
+
+maybe_jit_module()(cache=True, nopython=True)

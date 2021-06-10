@@ -1,32 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-py_lets_be_rational.normaldistribution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Pure python implementation of Peter Jaeckel's LetsBeRational.
-
-:copyright: © 2017 Gammon Capital LLC
-:license: MIT, see LICENSE for more details.
-
-About LetsBeRational:
-~~~~~~~~~~~~~~~~~~~~~
-
-The source code of LetsBeRational resides at www.jaeckel.org/LetsBeRational.7z .
-
-======================================================================================
-Copyright © 2013-2014 Peter Jäckel.
-
-Permission to use, copy, modify, and distribute this software is freely granted,
-provided that this notice is preserved.
-
-WARRANTY DISCLAIMER
-The Software is provided "as is" without warranty of any kind, either express or implied,
-including without limitation any implied warranties of condition, uninterrupted use,
-merchantability, fitness for a particular purpose, or non-infringement.
-======================================================================================
-"""
-
 # The asymptotic expansion  Φ(z) = φ(z)/|z|·[1-1/z^2+...],  Abramowitz & Stegun (26.2.12), suffices for Φ(z) to have
 # relative accuracy of 1.64E-16 for z<=-10 with 17 terms inside the square brackets (not counting the leading 1).
 # This translates to a maximum of about 9 iterations below, which is competitive with a call to erfc() and never
@@ -38,12 +11,12 @@ merchantability, fitness for a particular purpose, or non-infringement.
 from __future__ import division
 from math import fabs, sqrt, exp, log
 
-from py_lets_be_rational.numba_helper import maybe_jit
-from py_lets_be_rational.constants import DBL_MAX
-from py_lets_be_rational.constants import DBL_EPSILON
-from py_lets_be_rational.constants import ONE_OVER_SQRT_TWO_PI
-from py_lets_be_rational.constants import ONE_OVER_SQRT_TWO
-from py_lets_be_rational.erf_cody import erfc_cody
+from py_lets_be_quickly_rational.numba_helper import maybe_jit_module
+from py_lets_be_quickly_rational.constants import DBL_MAX
+from py_lets_be_quickly_rational.constants import DBL_EPSILON
+from py_lets_be_quickly_rational.constants import ONE_OVER_SQRT_TWO_PI
+from py_lets_be_quickly_rational.constants import ONE_OVER_SQRT_TWO
+from py_lets_be_quickly_rational.erf_cody import erfc_cody
 
 norm_cdf_asymptotic_expansion_first_threshold = -10.0
 norm_cdf_asymptotic_expansion_second_threshold = -1 / sqrt(DBL_EPSILON)
@@ -110,12 +83,10 @@ F6 = 1.42151175831644588870E-7
 F7 = 2.04426310338993978564E-15
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def norm_pdf(x):
     return ONE_OVER_SQRT_TWO_PI * exp(-.5 * x * x)
 
 
-@maybe_jit(cache=True)
 def norm_cdf(z):
     if z <= norm_cdf_asymptotic_expansion_first_threshold:
         # Asymptotic expansion for very negative z following (26.2.12) on page 408
@@ -150,7 +121,6 @@ def norm_cdf(z):
     return 0.5 * erfc_cody(-z * ONE_OVER_SQRT_TWO)
 
 
-@maybe_jit(cache=True, nopython=True, nogil=True)
 def inverse_norm_cdf(u):
     #
     # ALGORITHM AS241  APPL. STATIST. (1988) VOL. 37, NO. 3
@@ -184,3 +154,6 @@ def inverse_norm_cdf(u):
                   / (((((((F7 * r + F6) * r + F5) * r + F4) * r + F3) * r + F2) * r + F1) * r + 1.0)
 
         return -ret if q < 0.0 else ret
+
+
+maybe_jit_module()(cache=True, nopython=True)
