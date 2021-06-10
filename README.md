@@ -18,6 +18,11 @@ The below table provides some comparisons in the various libraries
 | Normalised IV Transformed Rational Guess Limited Iterations | 13.7s                   |  2.7s               | <b>~78%</b>
 
 
+## Installation
+  Can be installed with pip 
+  ```
+    pip3 install py-lets-be-quickly-rational
+   ```
 ## Roadmap
 Right now the code takes advantage of numba JIT compiling, but that can only get us so far. Several common stats functions are implemented in a custom way, orignially done in the C++ implementation since they were faster than the C++ versions. However, even optimized python code is slower than native code, and numpy provides several of those functions natively. This, combined with taking advantage of numpys vectorization support, could lead to performance impacts.  
 
